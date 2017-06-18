@@ -14,6 +14,9 @@
 		485D40F61EF59DB5008914C8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 485D40F51EF59DB5008914C8 /* Assets.xcassets */; };
 		485D40F91EF59DB6008914C8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 485D40F71EF59DB6008914C8 /* LaunchScreen.storyboard */; };
 		485D41021EF5A1FC008914C8 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 485D41011EF5A1FC008914C8 /* MapKit.framework */; };
+		485D41041EF5EBC3008914C8 /* testingTrace.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 485D41031EF5EBC3008914C8 /* testingTrace.gpx */; };
+		485D41061EF5FC55008914C8 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 485D41051EF5FC55008914C8 /* UserNotifications.framework */; };
+		485D41091EF63068008914C8 /* MyAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 485D41081EF63068008914C8 /* MyAnnotation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +31,10 @@
 		485D40F81EF59DB6008914C8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		485D40FA1EF59DB6008914C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		485D41011EF5A1FC008914C8 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		485D41031EF5EBC3008914C8 /* testingTrace.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = testingTrace.gpx; path = GeoFenceDemo/testingTrace.gpx; sourceTree = "<group>"; };
+		485D41051EF5FC55008914C8 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		485D41071EF63068008914C8 /* MyAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAnnotation.h; sourceTree = "<group>"; };
+		485D41081EF63068008914C8 /* MyAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAnnotation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				485D41061EF5FC55008914C8 /* UserNotifications.framework in Frameworks */,
 				485D41021EF5A1FC008914C8 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,6 +53,7 @@
 		485D40DD1EF59DB5008914C8 = {
 			isa = PBXGroup;
 			children = (
+				485D41031EF5EBC3008914C8 /* testingTrace.gpx */,
 				485D40E81EF59DB5008914C8 /* GeoFenceDemo */,
 				485D40E71EF59DB5008914C8 /* Products */,
 				485D41001EF5A1FC008914C8 /* Frameworks */,
@@ -71,6 +80,8 @@
 				485D40F71EF59DB6008914C8 /* LaunchScreen.storyboard */,
 				485D40FA1EF59DB6008914C8 /* Info.plist */,
 				485D40E91EF59DB5008914C8 /* Supporting Files */,
+				485D41071EF63068008914C8 /* MyAnnotation.h */,
+				485D41081EF63068008914C8 /* MyAnnotation.m */,
 			);
 			path = GeoFenceDemo;
 			sourceTree = "<group>";
@@ -86,6 +97,7 @@
 		485D41001EF5A1FC008914C8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				485D41051EF5FC55008914C8 /* UserNotifications.framework */,
 				485D41011EF5A1FC008914C8 /* MapKit.framework */,
 			);
 			name = Frameworks;
@@ -152,6 +164,7 @@
 			files = (
 				485D40F91EF59DB6008914C8 /* LaunchScreen.storyboard in Resources */,
 				485D40F61EF59DB5008914C8 /* Assets.xcassets in Resources */,
+				485D41041EF5EBC3008914C8 /* testingTrace.gpx in Resources */,
 				485D40F41EF59DB5008914C8 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -165,6 +178,7 @@
 			files = (
 				485D40F11EF59DB5008914C8 /* ViewController.m in Sources */,
 				485D40EE1EF59DB5008914C8 /* AppDelegate.m in Sources */,
+				485D41091EF63068008914C8 /* MyAnnotation.m in Sources */,
 				485D40EB1EF59DB5008914C8 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

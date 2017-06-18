@@ -8,9 +8,12 @@
 
 #import "ViewController.h"
 #import "MapKit/MapKit.h"
+#import "UserNotifications/UserNotifications.h"
+#import "MyAnnotation.h"
 
-@interface ViewController () <MKMapViewDelegate, CLLocationManagerDelegate>
+@interface ViewController () <MKMapViewDelegate, CLLocationManagerDelegate, UNUserNotificationCenterDelegate>
 
+@property (strong, nonatomic) IBOutlet UIImageView *pinIcon;
 @property (strong, nonatomic) IBOutlet UISwitch *uiSwitch;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *statusCheck;
 @property (strong, nonatomic) IBOutlet UILabel *statusLabel;
@@ -19,6 +22,8 @@
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property (nonatomic, assign) BOOL mapIsMoving;
 @property (strong, nonatomic) MKPointAnnotation *currentAnno;
+@property (strong, nonatomic) CLCircularRegion *geoRegion;
+@property (strong, nonatomic) MyAnnotation *nasaAnno;
 @end
 
 @implementation ViewController
@@ -27,6 +32,7 @@
   [super viewDidLoad];
   
   //Turn off the user interface until permission is obtained
+
   self.uiSwitch.enabled = NO;
   self.statusCheck.enabled = NO;
   
@@ -38,15 +44,23 @@
   self.locationManager.allowsBackgroundLocationUpdates = YES;
   self.locationManager.pausesLocationUpdatesAutomatically = YES;
   self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-  self.locationManager.distanceFilter = 3; // meters
+  self.locationManager.distanceFilter = 1; // meters
+
   
   // Zoom the map very close
   CLLocationCoordinate2D noLocation = CLLocationCoordinate2DMake(0.0, 0.0);
   MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(noLocation, 500, 500);
   MKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
   [self.mapView setRegion:adjustedRegion animated:YES];
-  
+  [self locateNASA];
   [self addCurrentAnnotation];
+  
+  //Set up a geoRegion object
+  [self setUpGeoRegion];
+  UNUserNotificationCenter *center = [UNUserNotificationCenter
+                                      currentNotificationCenter];
+  center.delegate = self;
+
   
   // Check if the device can do geofences
   if([CLLocationManager isMonitoringAvailableForClass:[CLCircularRegion class]] == YES) {
@@ -87,15 +101,25 @@
   self.mapIsMoving = NO;
 }
 
+
+- (void) setUpGeoRegion{
+  self.geoRegion = [[CLCircularRegion alloc]
+                    initWithCenter:CLLocationCoordinate2DMake(37.408892, -122.064457)
+                    radius:30
+                    identifier:@"MyRegionIdentifier"];
+}
+
+
+
 - (IBAction)switchTapped:(UISwitch *)sender {
   if(self.uiSwitch.isOn) {
     self.mapView.showsUserLocation = YES;
     [self.locationManager startUpdatingLocation];
-    //[self.locationManager startMonitoringForRegion:self.geoRegion];
+    [self.locationManager startMonitoringForRegion:self.geoRegion];
     self.statusCheck.enabled = YES;
   } else {
     self.statusCheck.enabled = NO;
-    //[self.locationManager stopMonitoringForRegion:self.geoRegion];
+    [self.locationManager stopMonitoringForRegion:self.geoRegion];
     [self.locationManager stopUpdatingLocation];
     self.mapView.showsUserLocation = NO;
   }
@@ -120,6 +144,84 @@
   }
 }
 
+- (void) locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+  UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+  content.title = [NSString localizedUserNotificationStringForKey:@"GeoFence!" arguments:nil];
+  content.body = [NSString localizedUserNotificationStringForKey:@"Entring the region!"
+                                                       arguments:nil];
+  UNNotificationRequest *request = [UNNotificationRequest
+                                    requestWithIdentifier:@"EnterFence" content:content trigger:nil];
+  UNUserNotificationCenter *center = [UNUserNotificationCenter
+                                      currentNotificationCenter];
+  [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (error != nil) {
+      NSLog(@"%@", error.localizedDescription);
+    }
+  }];
+  
+  self.eventLabel.text = @"Entered";
+  
+}
 
+- (void) locationManager:(CLLocationManager *)manager didExitRegion:(nonnull CLRegion *)region {
+  UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+  content.title = [NSString localizedUserNotificationStringForKey:@"GeoFence!" arguments:nil];
+  content.body = [NSString localizedUserNotificationStringForKey:@"exiting the region!"
+                                                       arguments:nil];
+  UNNotificationRequest *request = [UNNotificationRequest
+                                    requestWithIdentifier:@"ExitFence" content:content trigger:nil];
+  UNUserNotificationCenter *center = [UNUserNotificationCenter
+                                      currentNotificationCenter];
+  [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+    if (error != nil) {
+      NSLog(@"%@", error.localizedDescription);
+    }
+  }];
+  
+  
+  self.eventLabel.text = @"Exited";
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(nonnull UNNotification *)notification withCompletionHandler:(nonnull void (^)(UNNotificationPresentationOptions))completionHandler {
+  completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+
+- (IBAction)statusCheckTapped:(UIBarButtonItem *)sender {
+  [self.locationManager requestStateForRegion:self.geoRegion];
+  
+}
+
+- (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(nonnull CLRegion *)region{
+  if (state == CLRegionStateUnknown) {
+    self.statusLabel.text = @"Unknow";
+  } else if(state == CLRegionStateInside) {
+    self.statusLabel.text = @"Inside";
+  } else if(state == CLRegionStateOutside) {
+    self.statusLabel.text = @"OutSide";
+  } else {
+    self.statusLabel.text = @"Mystery";
+  }
+}
+
+- (void)locateNASA {
+  self.nasaAnno = [[MyAnnotation alloc] initWithTitle:@"NASA" Location:CLLocationCoordinate2DMake(37.408892, -122.064457)];
+  [self.mapView addAnnotation:self.nasaAnno];
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+  if([annotation isKindOfClass:[MyAnnotation class]]) {
+    MyAnnotation *myLocation = (MyAnnotation *)annotation;
+    
+    MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:@"MyCustomAnnotation"];
+    if (annotationView == nil)
+      annotationView = myLocation.annotationView;
+    else
+      annotationView.annotation = annotation;
+    return annotationView;
+  } else {
+    return nil;
+  }
+}
 
 @end
